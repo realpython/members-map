@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Realpython world map {% block title%} {% endblock %}</title>
+    <title>Real Python Community Map {% block title%} {% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Realpython world map</h1>
+    <h1>Real Python Community Map</h1>
     <table>
         <tr>
             <td>
                 <form method="post">
                     <label for="location">New location</label>
                     <input title="type city and country" name="location" id="location" required>
+                    <label for="nickname">Nickname</label>
+                    <input title="nickname" name="nickname" id="nickname">
                     <input type="submit" value="Add location">
                 </form>
             </td>

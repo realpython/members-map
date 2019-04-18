@@ -25,9 +25,10 @@ def index():
     if request.method == 'POST':
         # TODO: add new point to map in a different color - red or so
         location = request.form['location']
+        nickname = request.form['nickname']
         try:
             decoded_location = geolocator.geocode(location)
-            db_pg.insert_into_data(location, decoded_location.latitude, decoded_location.longitude)
+            db_pg.insert_into_data(location, decoded_location.latitude, decoded_location.longitude, nickname)
             # MarkerCluster(locations=[[decoded_location.latitude, decoded_location.longitude]]).add_to(m)
             # map_html = m._repr_html_()
             flash('location successfully added')

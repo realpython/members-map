@@ -41,11 +41,38 @@ def select_all_data():
     return all_data
 
 
-def insert_into_data(location, latitude, longitude):
+def create_table():
+    '''
+    created new data table in DB
+    :return:
+    '''
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("INSERT INTO data (location, latitude, longitude, created) VALUES (%s, %s, %s, %s)",
-        (location, latitude, longitude, datetime.utcnow()))
+    status = cursor.execute('CREATE TABLE data2 (id SERIAL PRIMARY KEY, location TEXT NOT NULL, latitude REAL NOT NULL, longitude REAL NOT NULL, created TIMESTAMP NOT NULL, nickname TEXT);')
+    print('status: ', status)
+    db.commit()
+    cursor.close()
+    close_db(db)
+
+
+def add_column_to_data():
+    '''
+    adds empty nickname column to data table
+    :return:
+    '''
+    db = get_db()
+    cursor = db.cursor()
+    status = cursor.execute('ALTER TABLE data ADD COLUMN nickname TEXT;')
+    db.commit()
+    cursor.close()
+    close_db(db)
+
+
+def insert_into_data(location, latitude, longitude, nickname):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO data (location, latitude, longitude, created, nickname) VALUES (%s, %s, %s, %s, %s)",
+                   (location, latitude, longitude, datetime.utcnow(), nickname))
     db.commit()
     cursor.close()
     # db.close()

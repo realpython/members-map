@@ -3,5 +3,6 @@ CREATE TABLE data (
   location TEXT NOT NULL,
   latitude REAL NOT NULL,
   longitude REAL NOT NULL,
-  created TIMESTAMP NOT NULL
+  created TIMESTAMP NOT NULL,
+  nickname TEXT
 );
