@@ -6,13 +6,14 @@ from datetime import datetime
 from geopy.geocoders import Nominatim
 import db_pg
 from folium.plugins import MarkerCluster
+from folium.map import Marker, Tooltip
 
 # TODO_: load data from DB - OK
 # TODO_: validate new posted data - partially
 # TODO: use cookies to verify if the user already submitted location
 # TODO_: display flash message for location validation error/successful location submission - OK
 # TODO_: add nickname to form and DB
-# TODO: folium pins with nicknames
+# TODO_: folium pins with nicknames
 # TODO: endpoint for exporting DB data to json
 
 bp = Blueprint('map', __name__)
@@ -25,7 +26,14 @@ def index():
     points = db_pg.select_map_data()
     nicknames = db_pg.select_nicknames()
 
-    MarkerCluster(locations=points, popups=nicknames).add_to(m)
+    # MarkerCluster(locations=points, popups=nicknames).add_to(m)
+    for i in range(len(points)):
+        tooltip_ = Tooltip(nicknames[i], permanent=True)
+        if nicknames[i] is None:
+            Marker(points[i]).add_to(m)
+        else:
+            Marker(points[i], tooltip=tooltip_).add_to(m)
+
     map_html = m._repr_html_()
     if request.method == 'POST':
         # TODO: add new point to map in a different color - red or so
