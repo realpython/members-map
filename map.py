@@ -11,6 +11,9 @@ from folium.plugins import MarkerCluster
 # TODO_: validate new posted data - partially
 # TODO: use cookies to verify if the user already submitted location
 # TODO_: display flash message for location validation error/successful location submission - OK
+# TODO_: add nickname to form and DB
+# TODO: folium pins with nicknames
+# TODO: endpoint for exporting DB data to json
 
 bp = Blueprint('map', __name__)
 geolocator = Nominatim(user_agent="pythonista_world_map")
@@ -20,7 +23,9 @@ geolocator = Nominatim(user_agent="pythonista_world_map")
 def index():
     m = folium.Map(location=[20, 0], zoom_start=3)
     points = db_pg.select_map_data()
-    MarkerCluster(locations=points).add_to(m)
+    nicknames = db_pg.select_nicknames()
+
+    MarkerCluster(locations=points, popups=nicknames).add_to(m)
     map_html = m._repr_html_()
     if request.method == 'POST':
         # TODO: add new point to map in a different color - red or so
@@ -44,4 +49,11 @@ def index():
 def map1():
     m = folium.Map(location=[20, 0], zoom_start=3)
     return m._repr_html_()
+
+
+@bp.route('/export')
+def export():
+    data = db_pg.select_all_data()
+    # return data
+    return render_template('base.html', map_=data)
 

@@ -95,5 +95,19 @@ def select_map_data():
     return map_data
 
 
+def select_nicknames():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT nickname FROM data')
+    db_data = cursor.fetchall()
+    nicknames = []
+    for each in db_data:
+        nicknames.append(each[0])
+    cursor.close()
+    # db.close()
+    close_db(db)
+    return nicknames
+
+
 def init_app(app):
     app.teardown_appcontext(close_db)
