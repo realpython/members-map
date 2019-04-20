@@ -14,9 +14,14 @@ def create_app(test_config=None):
     )
 
     if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
+        # app.config.from_pyfile('config.py', silent=True)
+        try:
+            app.config.update(SECRET_KEY=os.environ.get('SECRET_KEY'))
+        except KeyError:
+            print('SECRET_KEY not in env')
     else:
         app.config.from_mapping(test_config)
+    # print(app.config)
 
     try:
         os.makedirs(app.instance_path)
