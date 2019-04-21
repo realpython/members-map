@@ -4,6 +4,7 @@ from flask.cli import with_appcontext
 import click
 from datetime import datetime
 from os import path, environ
+import json
 
 
 def get_db():
@@ -32,7 +33,7 @@ def close_db(db_conn=None):
 def select_all_data():
     db = get_db()
     cursor = db.cursor()
-    all_data = cursor.execute('SELECT id, location, latitude, longitude, created FROM data;')
+    all_data = cursor.execute('SELECT id, location, latitude, longitude, created, nickname FROM data;')
     all_data = cursor.fetchall()
     db.commit()
     cursor.close()
@@ -107,6 +108,20 @@ def select_nicknames():
     # db.close()
     close_db(db)
     return nicknames
+
+
+def export_to_json():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT location, latitude, longitude, nickname FROM data;')
+    all_data = cursor.fetchall()
+    db.commit()
+    cursor.close()
+    close_db(db)
+
+    headers = ['location', 'latitude', 'longitude', 'nickname']
+    json_data = json.dumps([headers, all_data], indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
+    return json_data
 
 
 def init_app(app):

@@ -5,7 +5,7 @@ import db_pg
 
 
 def create_app(test_config=None):
-    # create and cofigure app
+    # create and configure app
     # TODO_: use SECRET_KEY as env variable
 
     app = Flask(__name__, instance_relative_config=True)
@@ -22,6 +22,8 @@ def create_app(test_config=None):
     else:
         app.config.from_mapping(test_config)
     # print(app.config)
+    print('instance path: ', app.instance_path)
+    map.instance_path = app.instance_path
 
     try:
         os.makedirs(app.instance_path)

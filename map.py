@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, send_file
 )
 import folium
 from datetime import datetime
@@ -7,6 +7,8 @@ from geopy.geocoders import Nominatim
 import db_pg
 from folium.plugins import MarkerCluster
 from folium.map import Marker, Tooltip
+import io
+from os import path
 
 # TODO_: load data from DB - OK
 # TODO_: validate new posted data - partially
@@ -14,14 +16,18 @@ from folium.map import Marker, Tooltip
 # TODO_: display flash message for location validation error/successful location submission - OK
 # TODO_: add nickname to form and DB
 # TODO_: folium pins with nicknames
-# TODO: endpoint for exporting DB data to json
+# TODO_: endpoint for exporting DB data to json
 
 bp = Blueprint('map', __name__)
 geolocator = Nominatim(user_agent="pythonista_world_map")
+instance_path = ''
 
 
 @bp.route('/', methods=('GET', 'POST'))
 def index():
+    """
+    main page with map and all pins
+    """
     m = folium.Map(location=[20, 0], zoom_start=3)
     points = db_pg.select_map_data()
     nicknames = db_pg.select_nicknames()
@@ -55,13 +61,27 @@ def index():
 
 @bp.route('/map')
 def map1():
+    """
+    displays only map
+    """
     m = folium.Map(location=[20, 0], zoom_start=3)
     return m._repr_html_()
 
 
-@bp.route('/export')
-def export():
-    data = db_pg.select_all_data()
-    # return data
-    return render_template('base.html', map_=data)
+@bp.route('/export/json', methods=('GET', 'POST'))
+def export_page():
+    """
+    page for data export to json file
+    :return: json file when save button is clicked
+    """
+    if request.method == 'POST':
+        data = db_pg.export_to_json()
+        print('map.py, instance path: ', instance_path)
+        temporary_file = path.join(instance_path, 'export.json')
+        # with io.open('instance\export.json', 'w', encoding='utf-8') as file:
+        with io.open(temporary_file, 'w', encoding='utf-8') as file:
+            file.write(data)
+
+        return send_file(temporary_file, as_attachment=True)
+    return render_template('export.html')
 
